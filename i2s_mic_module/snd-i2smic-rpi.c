@@ -58,11 +58,11 @@ static struct asoc_simple_card_info default_card_info = {
   .daifmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBS_CFS,
   .cpu_dai = {
     .name = "not-set.sai",          // -> snd_soc_dai_link.cpu_dai_name
-    .sysclk = 1
+    .sysclk = 1  //why is this a 1 and not a 0?  no idea.  different clock maybe?  could change it back and see what happens.  
   },
   .codec_dai = {
     .name = "snd-soc-dummy-dai",    //"dmic-codec", // -> snd_soc_dai_link.codec_dai_name
-    .sysclk = 1
+    .sysclk = 1  //why is this a 1 and not a 0?  no idea
   },
 };
 
@@ -71,7 +71,7 @@ static struct asoc_simple_card_info default_card_info = {
  */
 static struct platform_device default_card_device = {
   .name = "asoc-simple-card",   //module alias
-  .id = 1,
+  .id = 1,  //why is this a 1 and not a 0?  no idea
   .num_resources = 0,
   .dev = {
     .release = &device_release_callback,
@@ -84,13 +84,13 @@ static struct platform_device default_card_device = {
  */
 int i2s_mic_rpi_init(void)
 {
-  const char *dmaengine = "imx-sdma"; //module name
+  const char *dmaengine = "imx-sdma"; //the imx dma module name
   static char *card_platform;
   int ret;
 
   printk(KERN_INFO "snd-i2smic-rpi: Version %s\n", SND_I2SMIC_RPI_VERSION);
 
-  card_platform = "30010000.sai";
+  card_platform = "30010000.sai";  //this points the the address of syncronous audio interface 1 in the device tree
 
   printk(KERN_INFO "snd-i2smic-rpi: Setting platform to %s\n", card_platform);
 
