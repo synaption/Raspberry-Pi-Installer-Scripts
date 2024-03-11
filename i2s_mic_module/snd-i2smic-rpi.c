@@ -41,12 +41,6 @@
 static struct asoc_simple_card_info card_info;
 static struct platform_device card_device;
 
-/*
- * Setup command line parameter
- */
-static short rpi_platform_generation;
-module_param(rpi_platform_generation, short, 0);
-MODULE_PARM_DESC(rpi_platform_generation, "Raspberry Pi generation: 0=Pi0, 1=Pi2/3, 2=Pi4");
 
 /*
  * Dummy callback for release
@@ -60,15 +54,15 @@ static struct asoc_simple_card_info default_card_info = {
   .card = "snd_rpi_i2s_card",       // -> snd_soc_card.name
   .name = "simple-card_codec_link", // -> snd_soc_dai_link.name
   .codec = "snd-soc-dummy",         // "dmic-codec", // -> snd_soc_dai_link.codec_name
-  .platform = "not-set.i2s",
+  .platform = "not-set.sai",
   .daifmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBS_CFS,
   .cpu_dai = {
-    .name = "not-set.i2s",          // -> snd_soc_dai_link.cpu_dai_name
-    .sysclk = 0
+    .name = "not-set.sai",          // -> snd_soc_dai_link.cpu_dai_name
+    .sysclk = 1
   },
   .codec_dai = {
     .name = "snd-soc-dummy-dai",    //"dmic-codec", // -> snd_soc_dai_link.codec_dai_name
-    .sysclk = 0
+    .sysclk = 1
   },
 };
 
@@ -77,7 +71,7 @@ static struct asoc_simple_card_info default_card_info = {
  */
 static struct platform_device default_card_device = {
   .name = "asoc-simple-card",   //module alias
-  .id = 0,
+  .id = 1,
   .num_resources = 0,
   .dev = {
     .release = &device_release_callback,
@@ -90,28 +84,13 @@ static struct platform_device default_card_device = {
  */
 int i2s_mic_rpi_init(void)
 {
-  const char *dmaengine = "bcm2708-dmaengine"; //module name
+  const char *dmaengine = "imx-sdma"; //module name
   static char *card_platform;
   int ret;
 
   printk(KERN_INFO "snd-i2smic-rpi: Version %s\n", SND_I2SMIC_RPI_VERSION);
 
-  // Set platform
-  switch (rpi_platform_generation) {
-    case 0:
-      // Pi Zero
-      card_platform = "20203000.i2s";
-      break;
-    case 1:
-      // Pi 2 and 3
-      card_platform = "3f203000.i2s";
-      break;
-    case 2:
-    default:
-      // Pi 4
-      card_platform = "fe203000.i2s";
-      break;
-  }
+  card_platform = "30010000.sai";
 
   printk(KERN_INFO "snd-i2smic-rpi: Setting platform to %s\n", card_platform);
 
@@ -149,3 +128,4 @@ module_exit(i2s_mic_rpi_exit);
 MODULE_DESCRIPTION("ASoC simple-card I2S Microphone");
 MODULE_AUTHOR("Carter Nelson");
 MODULE_LICENSE("GPL v2");
+
